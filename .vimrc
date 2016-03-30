@@ -5,6 +5,7 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'shutnik/jshint2.vim'
 Plugin 'altercation/vim-colors-solarized'
 
 call vundle#end()
@@ -41,6 +42,7 @@ set hlsearch " Highlight searches
 set ignorecase " Ignore case of searches
 set incsearch " Highlight dynamically as pattern is typed
 set laststatus=2 " Always show status line
+set statusline+=%F " Add full file path to your existing statusline
 set mouse=a " Enable mouse in all modes
 set noerrorbells " Disable error bells
 set nostartofline " Don’t reset cursor to start of line when moving around.
@@ -66,6 +68,10 @@ set directory=~/.vim/swaps
 if exists("&undodir")
   set undodir=~/.vim/undo
 endif
+
+
+let jshint2_save = 1 "Lint JavaScript files after saving it
+let jshint2_read = 1 "Lint JavaScript files after reading it
 
 
 
