@@ -5,9 +5,14 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'L9'
+
 Plugin 'shutnik/jshint2.vim'
 Plugin 'altercation/vim-colors-solarized'
-
+Plugin 'jiangmiao/auto-pairs'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'bling/vim-airline'
+Plugin 'tpope/vim-fugitive'
 call vundle#end()
 filetype plugin indent on
 
@@ -72,6 +77,7 @@ endif
 
 let jshint2_save = 1 "Lint JavaScript files after saving it
 let jshint2_read = 1 "Lint JavaScript files after reading it
+let g:airline_powerline_fonts = 1 "Populate the g:airline_symbols dictionary
 
 
 
