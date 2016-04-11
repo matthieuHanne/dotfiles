@@ -7,7 +7,10 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'L9'
 
-Plugin 'shutnik/jshint2.vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/syntastic'
+Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'jiangmiao/auto-pairs'
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -59,6 +62,8 @@ set scrolloff=3 " Start scrolling three lines before the horizontal window borde
 set ai " Automatic indentation
 set shm=at " This shortens about every message to a minimum
 set nowrap " Don't wrap lines
+au BufReadPost *.hbs set syntax=html
+
 
 " Use relative line numbers
 set number " Enable line numbers
@@ -74,15 +79,29 @@ if exists("&undodir")
   set undodir=~/.vim/undo
 endif
 
-
-let jshint2_save = 1 "Lint JavaScript files after saving it
-let jshint2_read = 1 "Lint JavaScript files after reading it
 let g:airline_powerline_fonts = 1 "Populate the g:airline_symbols dictionary
 
 
+let g:ctrlp_working_path_mode = 'ra'
+"Exclude files and directories using Vim's wildignore and CtrlP's own g:ctrlp_custom_ignore
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
+let g:ctrlp_custom_ignore = '\v[\/](node_modules|target|bower_components|dist)|(\.(swp|ico|git|svn))$'
+
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 
 " => Map
 """""""""""
+" Change the default mapping and the default command to invoke CtrlP
+let g:ctrlp_map = '<c-b>'
+let g:ctrlp_cmd = 'CtrlP'
 
 " Strip trailing whitespace (,ss)
 function! StripWhitespace()

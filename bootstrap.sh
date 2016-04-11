@@ -16,12 +16,17 @@ else
     brew upgrade --all
     brew install vim --override-system-vi
     brew install ack
-    brew install tree 
+    brew install npm
+    brew install tree
     brew tap bramstein/webfonttools
     brew install sfnt2woff
     brew install sfnt2woff-zopfli
     brew install woff2
     brew cleanup
+    npm install -g bower
+    npm install -g handlebars
+    npm install -g jshint
+    npm install -g ember-cli
   fi;
 
   read -p "This may overwrite existing files in your home directory. Are you sure? (y/n) " -n 1;
