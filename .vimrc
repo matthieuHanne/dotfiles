@@ -14,7 +14,6 @@ Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'jiangmiao/auto-pairs'
 Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'bling/vim-airline'
 Plugin 'tpope/vim-fugitive'
 call vundle#end()
 filetype plugin indent on
@@ -23,6 +22,7 @@ filetype plugin indent on
 """"""""""
 
 " Use the Solarized Dark theme
+syntax enable
 set background=dark
 colorscheme solarized
 
@@ -39,7 +39,6 @@ set encoding=utf-8 nobomb " Use UTF-8 without BOM
 let mapleader="," " Change mapleader
 set binary " Don’t add empty newlines at the end of files
 set noeol " Don’t add empty newlines at the end of files
-syntax on " Enable syntax highlighting
 set cursorline " Highlight current line
 set tabstop=2 " Make tabs as wide as two spaces
 set shiftwidth=2 " Make tabs as wide as two spaces
@@ -64,6 +63,8 @@ set shm=at " This shortens about every message to a minimum
 set nowrap " Don't wrap lines
 au BufReadPost *.hbs set syntax=html
 
+set nobackup       "no backup files
+set noswapfile     "no swap files
 
 " Use relative line numbers
 set number " Enable line numbers
@@ -72,25 +73,10 @@ if exists("&relativenumber")
   au BufReadPost * set relativenumber
 endif
 
-" Centralize backups, swapfiles and undo history
-set backupdir=~/.vim/backups
-set directory=~/.vim/swaps
-if exists("&undodir")
-  set undodir=~/.vim/undo
-endif
-
-let g:airline_powerline_fonts = 1 "Populate the g:airline_symbols dictionary
-
-
 let g:ctrlp_working_path_mode = 'ra'
 "Exclude files and directories using Vim's wildignore and CtrlP's own g:ctrlp_custom_ignore
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
 let g:ctrlp_custom_ignore = '\v[\/](node_modules|target|bower_components|dist)|(\.(swp|ico|git|svn))$'
-
-
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
