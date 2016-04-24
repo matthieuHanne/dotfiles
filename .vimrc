@@ -120,7 +120,9 @@ noremap <leader>W :w !sudo tee % > /dev/null<CR>
 nmap <silent> ,/ :nohlsearch<CR>
 
 :map <F3> <C-W><C-W>
-
+iab tsup this._super(...arguments);
 iab tmod this.get('model')
+iab tset this.set('');<ESC>hhi
+iab tget this.get('');<ESC>hhi
 iab deb debugger
-iab clog console.log(this);<ESC>hi
+iab clog console.log(this, '');<ESC>hhi
