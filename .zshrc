@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/matthieuhanne/.oh-my-zsh
+export ZSH=/Users/matthieu/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -19,7 +19,7 @@ plugins=(git z)
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 # export MANPATH="/usr/local/man:$MANPATH"
 
-alias km="/Users/matthieuhanne/./killmouseaccel mouse"
+alias km="/Users/matthieu/./killmouseaccel mouse"
 
 source $ZSH/oh-my-zsh.sh
 export EDITOR='vim'
