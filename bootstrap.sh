@@ -16,7 +16,7 @@ else
     brew upgrade --all
     brew install zsh zsh-completions
     curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
-    chsh -s /usr/local/bin/zsh
+    chsh -s /bin/zsh
     brew install vim --override-system-vi
     brew install ack
     brew install npm
@@ -30,6 +30,8 @@ else
     npm install -g handlebars
     npm install -g jshint
     npm install -g ember-cli
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/dotfiles/vim/bundle/vundle
+    vim +PluginInstall +qall!
   fi;
 
   read -p "This may overwrite existing files in your home directory. Are you sure? (y/n) " -n 1;
