@@ -20,7 +20,7 @@ else
     brew install zsh zsh-completions
     curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
     chsh -s /bin/zsh
-    brew install vim --override-system-vi
+    brew install vim --with-override-system-vi
     brew install ack
     brew install npm
     brew install tree
