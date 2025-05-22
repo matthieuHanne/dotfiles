@@ -1,0 +1,103 @@
+{{- if eq .chezmoi.os "darwin" }}
+#!/bin/bash
+
+set -e
+
+function step() {
+  echo
+  echo "🔹 $1"
+  echo "----------------------------------------"
+}
+
+echo "🚀 Starting full macOS setup..."
+
+# ----------------------------------------
+# 🛠 Xcode Command Line Tools
+# ----------------------------------------
+step "Checking for Xcode Command Line Tools"
+
+if ! xcode-select -p >/dev/null 2>&1; then
+  echo "📦 Installing Xcode Command Line Tools..."
+  xcode-select --install
+  until xcode-select -p >/dev/null 2>&1; do
+    sleep 5
+  done
+  echo "✅ Xcode tools installed."
+else
+  echo "✅ Xcode tools already installed."
+fi
+
+# ----------------------------------------
+# 🍺 Homebrew
+# ----------------------------------------
+step "Checking for Homebrew"
+
+if ! command -v brew >/dev/null 2>&1; then
+  echo "🍺 Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  echo "✅ Homebrew installed."
+else
+  echo "✅ Homebrew already installed."
+fi
+
+# ----------------------------------------
+# 📦 Brew Packages
+# ----------------------------------------
+step "Installing Homebrew packages"
+
+brew bundle --file=/dev/stdin <<EOF
+# 
+brew "zsh"
+brew "htop"
+brew "git"
+brew "lazygit"
+brew "node"
+brew "go"
+brew "chezmoi"
+brew "neovim"
+brew "ripgrep"
+brew "fd"
+brew "toilet"
+brew "lolcat"
+# ---- linters
+
+# ---- cask
+cask "obsidian"
+cask "docker"
+cask "ghostty"
+cask "google-chrome"
+cask "figma"
+cask "notion"
+EOF
+
+echo "✅ All brew packages installed."
+
+# ----------------------------------------
+# 🐚 Zsh and Plugins
+# ----------------------------------------
+step "Setting up Zsh and plugins"
+
+ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  echo "🌀 Installing oh-my-zsh..."
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  echo "✅ oh-my-zsh installed."
+else
+  echo "✅ oh-my-zsh already installed."
+fi
+
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
+  echo "✨ Installing zsh-autosuggestions..."
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+else
+  echo "✅ zsh-autosuggestions already installed."
+fi
+
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
+  echo "✨ Installing zsh-syntax-highlighting..."
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+else
+  echo "✅ zsh-syntax-highlighting already installed."
+fi
