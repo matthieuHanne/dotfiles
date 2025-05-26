@@ -1,0 +1,9 @@
+# Use the global directory in a clean XDG path
+global-dir: ~/.local/share/pnpm
+store-dir: ~/.local/share/pnpm/store
+
+# Set your preferred registry
+registry: https://registry.npmjs.org/
+
+# Auto-install peer dependencies
+auto-install-peers: true

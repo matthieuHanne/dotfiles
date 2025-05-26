@@ -21,6 +21,14 @@ return {
 						"marksman",
 					},
 				})
+
+				vim.diagnostic.config({
+					virtual_text = false,
+					signs = true,
+					update_in_insert = false,
+					underline = true,
+					severity_sort = true,
+				})
 			end,
 		},
 		{ "hrsh7th/cmp-nvim-lsp" }, -- for completion capabilities
@@ -35,6 +43,8 @@ return {
 				settings = {
 					Lua = {
 						diagnostics = { globals = { "vim" } },
+						runtime = { version = "LuaJIT" },
+						workspace = { checkThirdParty = false },
 					},
 				},
 			},

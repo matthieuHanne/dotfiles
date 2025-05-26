@@ -1,0 +1,7 @@
+[user]
+	name = Matthieu Hanne
+	email = matthieu.hanne@gmail.com
+[init]
+	defaultBranch = main
+[core]
+	excludesFile = ~/.config/git/ignore

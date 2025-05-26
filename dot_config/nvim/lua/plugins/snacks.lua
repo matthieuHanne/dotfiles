@@ -8,7 +8,7 @@ local hannya_shingyo = [[
 
 local function stylized_kana_game()
 	local string = hannya_shingyo
-	local cmd = "echo " .. vim.fn.shellescape(string) .. " | lolcat --spread=9 --freq=0.5 --speed=22"
+	local cmd = "echo " .. vim.fn.shellescape(string)
 	return cmd
 end
 
@@ -510,7 +510,7 @@ return {
 			desc = "Dismiss All Notifications",
 		},
 		{
-			"<c-:>",
+			"<c-->",
 			function()
 				Snacks.terminal()
 			end,

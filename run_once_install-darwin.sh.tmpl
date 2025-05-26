@@ -1,12 +1,17 @@
 {{- if eq .chezmoi.os "darwin" }}
-#!/bin/bash
-
+#!/usr/bin/env bash
 set -e
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
-function step() {
+step() {
+  local msg="$1"
+  local timestamp
+  timestamp=$(date +"%Y-%m-%d %H:%M:%S")
+  local color='\033[1;34m' # Bold Blue
+  local reset='\033[0m'
   echo
-  echo "🔹 $1"
-  echo "----------------------------------------"
+  echo -e "${color}🔹 [${timestamp}] ${msg}${reset}"
+  printf '%*s\n' "${COLUMNS:-80}" '' | tr ' ' '-'
 }
 
 echo "🚀 Starting full macOS setup..."
@@ -42,62 +47,127 @@ else
 fi
 
 # ----------------------------------------
-# 📦 Brew Packages
+# 📦 Install Homebrew Packages
 # ----------------------------------------
 step "Installing Homebrew packages"
 
-brew bundle --file=/dev/stdin <<EOF
-# 
-brew "zsh"
-brew "htop"
-brew "git"
-brew "lazygit"
-brew "node"
-brew "go"
-brew "chezmoi"
-brew "neovim"
+brew bundle --file=- <<EOF
+tap "homebrew/cask"
+tap "homebrew/core"
+
+# CLI tools
+brew "curl"
 brew "ripgrep"
 brew "fd"
-brew "toilet"
-brew "lolcat"
-# ---- linters
+brew "htop"
+brew "git"
+brew "go"
+brew "node"
+brew "chezmoi"
+brew "tmux"
+brew "neovim"
+brew "lazygit"
+brew "figlet"
 
-# ---- cask
-cask "obsidian"
-cask "docker"
+# GUI apps (cask)
 cask "ghostty"
-cask "google-chrome"
-cask "figma"
-cask "notion"
 EOF
 
-echo "✅ All brew packages installed."
+if [ $? -eq 0 ]; then
+  echo "✅ All Homebrew packages installed successfully."
+else
+  echo "❌ Brew package installation failed."
+  exit 1
+fi
 
 # ----------------------------------------
-# 🐚 Zsh and Plugins
+# 🐚 Zsh Plugins
 # ----------------------------------------
-step "Setting up Zsh and plugins"
+step "Installing zsh plugins"
 
-ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
+ZSH_PLUGIN_DIR="$XDG_DATA_HOME/zsh/plugins"
+mkdir -p "$ZSH_PLUGIN_DIR"
 
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  echo "🌀 Installing oh-my-zsh..."
-  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  echo "✅ oh-my-zsh installed."
+install_zsh_plugin() {
+  local name="$1"
+  local repo="$2"
+  local target="$ZSH_PLUGIN_DIR/$name"
+
+  if [ ! -d "$target" ]; then
+    echo "✨ Installing $name..."
+    git clone --depth=1 "$repo" "$target"
+  else
+    echo "✅ $name already installed."
+  fi
+}
+
+install_zsh_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions"
+install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+install_zsh_plugin "zsh-z" "https://github.com/agkozak/zsh-z.git"
+
+# ----------------------------------------
+# 🐚 Tmux Plugins (TPM + Resurrect)
+# ----------------------------------------
+step "Installing tmux plugins"
+
+TMUX_PLUGIN_DIR="$XDG_DATA_HOME/tmux/plugins"
+TPM_PATH="$TMUX_PLUGIN_DIR/tpm"
+
+if [ ! -d "$TPM_PATH" ]; then
+  echo "🌀 Installing tmux-tpm..."
+  git clone --depth=1 https://github.com/tmux-plugins/tpm "$TPM_PATH"
+  echo "✅ tmux-tpm installed."
 else
-  echo "✅ oh-my-zsh already installed."
+  echo "✅ tmux-tpm already installed."
 fi
 
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
-  echo "✨ Installing zsh-autosuggestions..."
-  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+# ----------------------------------------
+# 🐚 Clone obsidian notes
+# ----------------------------------------
+if [ ! -d "$HOME/notes" ]; then
+  echo "🌀 Cloning obsidian notes..."
+  git clone https://github.com/matthieuHanne/notes.git "$HOME/notes"
+  echo "✅ obsidian notes cloned."
 else
-  echo "✅ zsh-autosuggestions already installed."
+  echo "✅ obsidian notes already cloned."
 fi
 
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-  echo "✨ Installing zsh-syntax-highlighting..."
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
-else
-  echo "✅ zsh-syntax-highlighting already installed."
-fi
+# ----------------------------------------
+# Remapping Caps Lock to Control
+# ----------------------------------------
+# Run the remap immediately
+#hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}'
+
+echo "Remapping Caps Lock to Control..."
+
+hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}'
+
+mkdir -p ~/Library/LaunchAgents
+
+cat <<EOF >~/Library/LaunchAgents/com.user.keyboardremap.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+
+  <dict>
+    <key>Label</key>
+    <string>com.user.keyboardremap</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/usr/bin/hidutil</string>
+      <string>property</string>
+      <string>--set</string>
+      <string>{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+  </dict>
+</plist>
+EOF
+
+chmod 644 ~/Library/LaunchAgents/com.user.keyboardremap.plist
+launchctl load ~/Library/LaunchAgents/com.user.keyboardremap.plist
+
+echo "✅ Caps Lock remapped to Control (immediate). This setting will persist after reboot/login."
+echo "💡 You might need to logout or reboot for full effect."

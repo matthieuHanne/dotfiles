@@ -17,7 +17,7 @@ opt.relativenumber = true -- Relative numbers
 opt.cursorline = true -- Highlight current line
 opt.signcolumn = "yes" -- Always show sign column
 opt.termguicolors = true -- True color support
-opt.scrolloff = 4 -- Lines of context when scrolling
+opt.scrolloff = 8 -- Lines of context when scrolling
 opt.wrap = false -- No line wrap
 
 -- Completion & searching
@@ -44,6 +44,7 @@ opt.foldlevel = 99
 -- -- -- Misc
 opt.confirm = true -- Confirm before closing unsaved files
 opt.showmode = false -- Don't show mode (assuming statusline)
+opt.conceallevel = 1 -- Markdown (or other syntax) is visually simplified
 
 -- undo management
 local undodir = vim.fn.stdpath("cache") .. "/undo"

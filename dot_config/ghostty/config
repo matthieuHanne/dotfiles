@@ -1,2 +1,26 @@
 theme = catppuccin-mocha
 copy-on-select = clipboard
+font-family = "JetBrainsMono Nerd Font Mono"
+font-thicken = true
+shell-integration = zsh
+
+keybind = super+w=text:\x1b[21~
+keybind = super+t=text:\x1b[20~
+keybind = super+d=text:\x1b[19~	
+keybind = super+shift+d=text:\x1b[18~	
+
+keybind = super+right=text:\x1b[15~	
+keybind = super+left=text:\x1b[17~	
+
+keybind = ctrl+&=text:\x1b[1;5P   
+keybind = ctrl+é=text:\x1b[1;5Q     
+keybind = ctrl+"=text:\x1b[1;5R     
+keybind = ctrl+'=text:\x1b[1;5S     
+keybind = ctrl+(=text:\x1b[15;5~    
+keybind = ctrl+§=text:\x1b[17;5~    
+keybind = ctrl+è=text:\x1b[18;5~    
+keybind = ctrl+!=text:\x1b[19;5~    
+keybind = ctrl+ç=text:\x1b[20;5~    
+keybind = ctrl+à=text:\x1b[21;5~
+keybind = ctrl+)=text:\x1b[23;5~ 
+keybind = ctrl+-=text:\x1b[24;5~  

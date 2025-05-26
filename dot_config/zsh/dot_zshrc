@@ -1,0 +1,10 @@
+export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+
+# Load config parts
+for file in env config plugins prompt aliases; do
+  [ -f "$ZDOTDIR/$file.zsh" ] && source "$ZDOTDIR/$file.zsh"
+done
+
+if command -v tmux >/dev/null 2>&1 && [ -z "$TMUX" ] && [ "$TERM_PROGRAM" != "vscode" ]; then
+  tmux attach -t main || tmux new -s main
+fi
