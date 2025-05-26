@@ -15,37 +15,6 @@ step() {
 }
 
 echo "🚀 Starting full macOS setup..."
-
-# ----------------------------------------
-# 🛠 Xcode Command Line Tools
-# ----------------------------------------
-step "Checking for Xcode Command Line Tools"
-
-if ! xcode-select -p >/dev/null 2>&1; then
-  echo "📦 Installing Xcode Command Line Tools..."
-  xcode-select --install
-  until xcode-select -p >/dev/null 2>&1; do
-    sleep 5
-  done
-  echo "✅ Xcode tools installed."
-else
-  echo "✅ Xcode tools already installed."
-fi
-
-# ----------------------------------------
-# 🍺 Homebrew
-# ----------------------------------------
-step "Checking for Homebrew"
-
-if ! command -v brew >/dev/null 2>&1; then
-  echo "🍺 Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-  echo "✅ Homebrew installed."
-else
-  echo "✅ Homebrew already installed."
-fi
-
 # ----------------------------------------
 # 📦 Install Homebrew Packages
 # ----------------------------------------
