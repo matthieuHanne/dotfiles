@@ -1,5 +1,5 @@
 local M = {}
-local uv = vim.loop
+local uv = vim.uv or vim.loop
 
 -- Shorten path to '.../parent/parent/' style
 local function shorten_path(path)

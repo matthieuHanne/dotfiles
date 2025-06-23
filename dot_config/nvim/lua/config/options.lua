@@ -1,5 +1,4 @@
 local opt = vim.opt
-
 opt.swapfile = false
 
 -- Basic editing
@@ -54,3 +53,30 @@ end
 
 opt.undofile = true
 opt.undodir = undodir
+
+-- Auto-reload files changed outside of Neovim
+opt.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+	command = "checktime",
+})
+
+-- Auto-save all buffers when Neovim loses focus
+vim.api.nvim_create_autocmd("FocusLost", {
+	callback = function()
+		-- Save only modifiable, listed buffers that have changes
+		for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+			local ok, result = pcall(function()
+				return vim.api.nvim_buf_is_loaded(buf)
+					and vim.bo[buf].modifiable
+					and vim.bo[buf].buftype == ""
+					and vim.bo[buf].buflisted
+					and vim.bo[buf].modified
+			end)
+			if ok and result then
+				vim.api.nvim_buf_call(buf, function()
+					vim.cmd("silent! write")
+				end)
+			end
+		end
+	end,
+})

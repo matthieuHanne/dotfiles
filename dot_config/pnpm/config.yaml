@@ -1,9 +1,54 @@
-# Use the global directory in a clean XDG path
+# PNPM Configuration
+
+# XDG Base Directory compliance
 global-dir: ~/.local/share/pnpm
+global-bin-dir: ~/.local/share/pnpm
 store-dir: ~/.local/share/pnpm/store
+cache-dir: ~/.cache/pnpm
+state-dir: ~/.cache/pnpm/state
 
-# Set your preferred registry
-registry: https://registry.npmjs.org/
-
-# Auto-install peer dependencies
+# Dependencies
 auto-install-peers: true
+strict-peer-dependencies: false
+dedupe-peer-dependents: true
+
+# Performance optimizations
+node-linker: isolated
+shamefully-hoist: false
+hoist-pattern: []
+
+# Workspace settings
+prefer-workspace-packages: true
+recursive-install: true
+link-workspace-packages: true
+
+# Registry & Network
+registry: https://registry.npmjs.org/
+network-timeout: 60000
+fetch-retries: 2
+fetch-retry-factor: 10
+fetch-retry-mintimeout: 1000
+fetch-retry-maxtimeout: 60000
+
+# Security & Verification
+verify-store-integrity: true
+ignore-pnpmfile: false
+
+# Logging & Output
+reporter: default
+progress: true
+color: auto
+
+# Lockfile behavior
+lockfile: true
+frozen-lockfile: false
+prefer-frozen-lockfile: true
+
+# Node.js options
+use-node-version: auto
+node-version: auto
+
+# Package handling
+side-effects-cache: true
+side-effects-cache-readonly: false
+package-import-method: auto

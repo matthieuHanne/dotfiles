@@ -1,26 +1,52 @@
+# Theme and Appearance
 theme = catppuccin-mocha
-copy-on-select = clipboard
 font-family = "JetBrainsMono Nerd Font Mono"
+font-size = 14
 font-thicken = true
+window-padding-x = 10
+window-padding-y = 10
+
+# Behavior
+copy-on-select = clipboard
 shell-integration = zsh
+mouse-scroll-multiplier = 3
+confirm-close-surface = false
 
-keybind = super+w=text:\x1b[21~
-keybind = super+t=text:\x1b[20~
-keybind = super+d=text:\x1b[19~	
-keybind = super+shift+d=text:\x1b[18~	
+# Performance
+gpu-backend = metal
 
-keybind = super+right=text:\x1b[15~	
-keybind = super+left=text:\x1b[17~	
+# Cursor
+cursor-style = block
+cursor-style-blink = true
 
-keybind = ctrl+&=text:\x1b[1;5P   
-keybind = ctrl+é=text:\x1b[1;5Q     
-keybind = ctrl+"=text:\x1b[1;5R     
-keybind = ctrl+'=text:\x1b[1;5S     
-keybind = ctrl+(=text:\x1b[15;5~    
-keybind = ctrl+§=text:\x1b[17;5~    
-keybind = ctrl+è=text:\x1b[18;5~    
-keybind = ctrl+!=text:\x1b[19;5~    
-keybind = ctrl+ç=text:\x1b[20;5~    
-keybind = ctrl+à=text:\x1b[21;5~
-keybind = ctrl+)=text:\x1b[23;5~ 
-keybind = ctrl+-=text:\x1b[24;5~  
+# Scrollback
+scrollback-limit = 10000
+
+# Window
+window-decoration = true
+window-theme = dark
+macos-titlebar-style = transparent
+
+# Custom Keybindings
+# Window Management
+keybind = super+w=text:\x1b[21~        # Close tab
+keybind = super+t=text:\x1b[20~        # New tab
+keybind = super+d=text:\x1b[19~        # Split vertical
+keybind = super+shift+d=text:\x1b[18~  # Split horizontal
+
+# Navigation
+keybind = super+right=text:\x1b[15~    # Next tab
+keybind = super+left=text:\x1b[17~     # Previous tab
+
+# Function Keys (F1-F12) with Ctrl
+# These map to tmux window switching in your config
+keybind = ctrl+1=text:\x1b[1;5P        # Ctrl+F1
+keybind = ctrl+2=text:\x1b[1;5Q        # Ctrl+F2
+keybind = ctrl+3=text:\x1b[1;5R        # Ctrl+F3
+keybind = ctrl+4=text:\x1b[1;5S        # Ctrl+F4
+keybind = ctrl+5=text:\x1b[15;5~       # Ctrl+F5
+keybind = ctrl+6=text:\x1b[17;5~       # Ctrl+F6
+keybind = ctrl+7=text:\x1b[18;5~       # Ctrl+F7
+keybind = ctrl+8=text:\x1b[19;5~       # Ctrl+F8
+keybind = ctrl+9=text:\x1b[20;5~       # Ctrl+F9
+keybind = ctrl+0=text:\x1b[21;5~       # Ctrl+F10  

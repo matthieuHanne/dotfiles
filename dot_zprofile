@@ -1,7 +1,4 @@
 #!/bin/sh
-# Homebrew (before PATH mods to avoid overwriting)
-eval "$(/opt/homebrew/bin/brew shellenv)"
-
 # Use XDG-compliant config directory for Zsh
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 

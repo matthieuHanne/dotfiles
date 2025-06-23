@@ -1,8 +1,15 @@
 {{- if eq .chezmoi.os "darwin" }}
 #!/usr/bin/env bash
-set -e
-XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
+# Exit on any error, undefined variable, or pipe failure
+set -euo pipefail
+
+# XDG Base Directory specification
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+# Logging functions
 step() {
   local msg="$1"
   local timestamp
@@ -14,45 +21,164 @@ step() {
   printf '%*s\n' "${COLUMNS:-80}" '' | tr ' ' '-'
 }
 
-echo "🚀 Starting full macOS setup..."
+success() {
+  local msg="$1"
+  echo -e "\033[1;32m✅ ${msg}\033[0m"
+}
+
+error() {
+  local msg="$1"
+  echo -e "\033[1;31m❌ ${msg}\033[0m" >&2
+}
+
+warning() {
+  local msg="$1"
+  echo -e "\033[1;33m⚠️  ${msg}\033[0m"
+}
+
+# Check if command exists
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Create XDG directories
+create_xdg_directories() {
+  step "Creating XDG Base Directories"
+  local dirs=(
+    "$XDG_CONFIG_HOME"
+    "$XDG_DATA_HOME"
+    "$XDG_CACHE_HOME"
+    "$XDG_DATA_HOME/npm"
+    "$XDG_DATA_HOME/pnpm"
+    "$XDG_DATA_HOME/go"
+    "$XDG_DATA_HOME/tmux/plugins"
+    "$XDG_DATA_HOME/oh-my-zsh"
+    "$XDG_CACHE_HOME/zsh"
+    "$XDG_CACHE_HOME/tmux"
+    "$XDG_CACHE_HOME/npm"
+    "$XDG_CACHE_HOME/pnpm"
+    "$XDG_CACHE_HOME/go/mod"
+  )
+  
+  for dir in "${dirs[@]}"; do
+    if [[ ! -d "$dir" ]]; then
+      mkdir -p "$dir"
+      echo "  📁 Created: $dir"
+    fi
+  done
+  success "XDG directories ready"
+}
+
+echo "🚀 Starting comprehensive macOS development environment setup..."
+
+# ----------------------------------------
+# 📁 Setup Directory Structure
+# ----------------------------------------
+create_xdg_directories
+
+# ----------------------------------------
+# 🍺 Install/Update Homebrew
+# ----------------------------------------
+step "Setting up Homebrew"
+
+if ! command_exists brew; then
+  echo "🌀 Installing Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+else
+  echo "🔄 Updating Homebrew..."
+  brew update
+fi
+
 # ----------------------------------------
 # 📦 Install Homebrew Packages
 # ----------------------------------------
 step "Installing Homebrew packages"
 
-brew bundle --file=- <<EOF
+brew bundle --file=/dev/stdin <<EOF
 tap "homebrew/cask"
 tap "homebrew/core"
+tap "homebrew/cask-fonts"
 
-# CLI tools
+# Essential CLI tools
 brew "curl"
+brew "wget"
+brew "git"
+brew "git-delta"
 brew "ripgrep"
 brew "fd"
+brew "fzf"
+brew "jq"
+brew "yq"
+brew "tree"
 brew "htop"
-brew "git"
-brew "go"
-brew "node"
-brew "chezmoi"
-brew "tmux"
-brew "neovim"
-brew "lazygit"
-brew "figlet"
+brew "btop"
+brew "bat"
+brew "eza"
+brew "zoxide"
 
-# GUI apps (cask)
+# Development tools
+brew "neovim"
+brew "tmux"
+brew "lazygit"
+brew "chezmoi"
+brew "gh"
+
+# Programming languages and runtimes
+brew "node"
+brew "pnpm"
+brew "go"
+brew "python@3.11"
+brew "python@3.12"
+
+# Additional utilities
+brew "figlet"
+brew "lolcat"
+brew "cowsay"
+brew "fortune"
+brew "tldr"
+brew "thefuck"
+
+# Fonts
+cask "font-jetbrains-mono"
+cask "font-jetbrains-mono-nerd-font"
+cask "font-fira-code"
+cask "font-fira-code-nerd-font"
+
+# GUI applications
 cask "ghostty"
+cask "docker"
+cask "visual-studio-code"
+cask "google-chrome"
+cask "firefox"
 EOF
 
-if [ $? -eq 0 ]; then
-  echo "✅ All Homebrew packages installed successfully."
+if [[ $? -eq 0 ]]; then
+  success "All Homebrew packages installed successfully"
 else
-  echo "❌ Brew package installation failed."
+  error "Homebrew package installation failed"
   exit 1
 fi
 
 # ----------------------------------------
-# 🐚 Zsh Plugins
+# 🐚 Oh My Zsh Installation
 # ----------------------------------------
-step "Installing zsh plugins"
+step "Installing Oh My Zsh to XDG location"
+
+if [[ ! -d "$XDG_DATA_HOME/oh-my-zsh" ]]; then
+  echo "🌀 Installing Oh My Zsh..."
+  git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$XDG_DATA_HOME/oh-my-zsh"
+  success "Oh My Zsh installed to $XDG_DATA_HOME/oh-my-zsh"
+else
+  echo "🔄 Updating Oh My Zsh..."
+  cd "$XDG_DATA_HOME/oh-my-zsh" && git pull origin master
+  success "Oh My Zsh already installed and updated"
+fi
+
+# ----------------------------------------
+# 🐚 Zsh Plugins (External)
+# ----------------------------------------
+step "Installing external Zsh plugins"
 
 ZSH_PLUGIN_DIR="$XDG_DATA_HOME/zsh/plugins"
 mkdir -p "$ZSH_PLUGIN_DIR"
@@ -62,81 +188,169 @@ install_zsh_plugin() {
   local repo="$2"
   local target="$ZSH_PLUGIN_DIR/$name"
 
-  if [ ! -d "$target" ]; then
+  if [[ ! -d "$target" ]]; then
     echo "✨ Installing $name..."
     git clone --depth=1 "$repo" "$target"
+    success "$name installed"
   else
-    echo "✅ $name already installed."
+    echo "🔄 Updating $name..."
+    cd "$target" && git pull origin master 2>/dev/null || git pull origin main 2>/dev/null || true
+    success "$name updated"
   fi
 }
 
+# Only install plugins not covered by Oh My Zsh
 install_zsh_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autosuggestions"
 install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting.git"
-install_zsh_plugin "zsh-z" "https://github.com/agkozak/zsh-z.git"
+
+# Note: zsh-z is now handled by Oh My Zsh's 'z' plugin
 
 # ----------------------------------------
-# 🐚 Tmux Plugins (TPM + Resurrect)
+# 🐚 Tmux Plugin Manager
 # ----------------------------------------
-step "Installing tmux plugins"
+step "Installing Tmux Plugin Manager"
 
 TMUX_PLUGIN_DIR="$XDG_DATA_HOME/tmux/plugins"
 TPM_PATH="$TMUX_PLUGIN_DIR/tpm"
 
-if [ ! -d "$TPM_PATH" ]; then
-  echo "🌀 Installing tmux-tpm..."
+if [[ ! -d "$TPM_PATH" ]]; then
+  echo "🌀 Installing TPM..."
   git clone --depth=1 https://github.com/tmux-plugins/tpm "$TPM_PATH"
-  echo "✅ tmux-tpm installed."
+  success "TPM installed"
 else
-  echo "✅ tmux-tpm already installed."
+  echo "🔄 Updating TPM..."
+  cd "$TPM_PATH" && git pull origin master
+  success "TPM updated"
 fi
 
 # ----------------------------------------
-# 🐚 Clone obsidian notes
+# 📝 Node.js Setup
 # ----------------------------------------
-if [ ! -d "$HOME/notes" ]; then
-  echo "🌀 Cloning obsidian notes..."
-  git clone https://github.com/matthieuHanne/notes.git "$HOME/notes"
-  echo "✅ obsidian notes cloned."
-else
-  echo "✅ obsidian notes already cloned."
+step "Setting up Node.js environment"
+
+# Install global packages with pnpm
+if command_exists pnpm; then
+  echo "🌀 Installing global Node.js packages..."
+  pnpm add -g \
+    typescript \
+    ts-node \
+    eslint \
+    prettier \
+    npm-check-updates \
+    serve \
+    http-server \
+    nodemon \
+    concurrently
+  success "Global Node.js packages installed"
 fi
 
 # ----------------------------------------
-# Remapping Caps Lock to Control
+# 🐍 Python Setup
 # ----------------------------------------
-# Run the remap immediately
-#hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}'
+step "Setting up Python environment"
 
-echo "Remapping Caps Lock to Control..."
+if command_exists python3; then
+  echo "🌀 Installing essential Python packages..."
+  python3 -m pip install --user --upgrade \
+    pip \
+    setuptools \
+    wheel \
+    virtualenv \
+    pipx \
+    black \
+    flake8 \
+    mypy \
+    jupyter \
+    requests \
+    httpx
+  success "Python packages installed"
+fi
 
-hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}'
+# ----------------------------------------
+# 🔧 macOS Preferences
+# ----------------------------------------
+step "Configuring macOS preferences"
 
-mkdir -p ~/Library/LaunchAgents
+# Show hidden files in Finder
+defaults write com.apple.finder AppleShowAllFiles -bool true
 
-cat <<EOF >~/Library/LaunchAgents/com.user.keyboardremap.plist
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
- "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
+# Show file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
-  <dict>
-    <key>Label</key>
-    <string>com.user.keyboardremap</string>
-    <key>ProgramArguments</key>
-    <array>
-      <string>/usr/bin/hidutil</string>
-      <string>property</string>
-      <string>--set</string>
-      <string>{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-  </dict>
-</plist>
-EOF
+# Disable creation of .DS_Store files on network drives
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
-chmod 644 ~/Library/LaunchAgents/com.user.keyboardremap.plist
-launchctl load ~/Library/LaunchAgents/com.user.keyboardremap.plist
+# Faster key repeat
+defaults write NSGlobalDomain KeyRepeat -int 2
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
-echo "✅ Caps Lock remapped to Control (immediate). This setting will persist after reboot/login."
-echo "💡 You might need to logout or reboot for full effect."
+# Show battery percentage
+defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+
+success "macOS preferences configured"
+
+# ----------------------------------------
+# 📚 Clone Personal Notes (if applicable)
+# ----------------------------------------
+step "Setting up personal workspace"
+
+if [[ ! -d "$HOME/notes" ]]; then
+  echo "🌀 Cloning personal notes..."
+  if git clone https://github.com/matthieuHanne/notes.git "$HOME/notes" 2>/dev/null; then
+    success "Personal notes cloned"
+  else
+    warning "Could not clone notes repository (might be private or not exist)"
+  fi
+else
+  success "Personal notes already exist"
+fi
+
+# ----------------------------------------
+# 🔄 Final Setup Steps
+# ----------------------------------------
+step "Performing final setup steps"
+
+# Restart affected applications
+echo "🔄 Restarting Finder..."
+killall Finder 2>/dev/null || true
+
+# Install tmux plugins if tmux is available
+if command_exists tmux && [[ -f "$XDG_CONFIG_HOME/tmux/tmux.conf" ]]; then
+  echo "🌀 Installing tmux plugins..."
+  "$TPM_PATH/bin/install_plugins" 2>/dev/null || true
+fi
+
+# Set up git if not configured
+if ! git config --global user.name >/dev/null 2>&1; then
+  warning "Git user not configured. Run: git config --global user.name 'Your Name'"
+  warning "And: git config --global user.email 'your.email@example.com'"
+fi
+
+success "macOS development environment setup complete!"
+
+echo
+echo "🎉 Setup Summary:"
+echo "  • Homebrew packages installed and updated"
+echo "  • Oh My Zsh installed with XDG compliance"
+echo "  • Zsh plugins (autosuggestions, syntax-highlighting) installed"
+echo "  • Tmux Plugin Manager installed"
+echo "  • Node.js global packages installed"
+echo "  • Python packages installed"
+echo "  • macOS preferences optimized"
+echo "  • Personal workspace set up"
+echo
+echo "📝 Next Steps:"
+echo "  1. Restart your terminal to load new configurations"
+echo "  2. Run 'tmux' and press Ctrl+Space + I to install tmux plugins"
+echo "  3. Open Neovim and let Lazy.nvim install plugins automatically"
+echo "  4. Customize any remaining settings to your preference"
+echo
+echo "🔗 Useful Commands:"
+echo "  • chezmoi status      - Check dotfiles status"
+echo "  • chezmoi diff        - See configuration changes"
+echo "  • chezmoi apply       - Apply any pending changes"
+echo "  • brew bundle dump    - Generate current Brewfile"
+echo
+warning "Please restart your terminal session for all changes to take effect!"
+
+{{- end }}

@@ -1,5 +1,29 @@
+# NPM Configuration
 prefix=${XDG_DATA_HOME:-$HOME/.local/share}/npm
 cache=${XDG_CACHE_HOME:-$HOME/.cache}/npm
-init-author-name=Your Name
+
+# Author Information
+init-author-name=Matthieu Hanne
+init-author-email=matthieu.hanne@gmail.com
 init-license=MIT
+init-version=0.1.0
+
+# Package Management
 save-exact=true
+save-prefix=''
+package-lock=true
+package-lock-only=false
+
+# Performance & Behavior
+progress=true
+loglevel=warn
+audit-level=moderate
+fund=false
+update-notifier=false
+
+# Registry & Security
+registry=https://registry.npmjs.org/
+strict-ssl=true
+
+# Development
+engine-strict=true

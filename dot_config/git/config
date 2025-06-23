@@ -1,7 +1,71 @@
 [user]
 	name = Matthieu Hanne
 	email = matthieu.hanne@gmail.com
+
 [init]
 	defaultBranch = main
+
 [core]
-	excludesFile = ~/.config/git/ignore
+	excludesFile = ~/.config/git/gitignore
+	editor = nvim
+	autocrlf = input
+	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+	pager = less -FRSX
+
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+
+[push]
+	default = current
+	autoSetupRemote = true
+
+[pull]
+	rebase = true
+	ff = only
+
+[fetch]
+	prune = true
+
+[diff]
+	colorMoved = default
+	algorithm = histogram
+
+[merge]
+	conflictstyle = zdiff3
+
+[rerere]
+	enabled = true
+
+[alias]
+	# Shortcuts
+	st = status -sb
+	co = checkout
+	cob = checkout -b
+	cm = commit -m
+	ca = commit --amend
+	br = branch
+	df = diff
+	dfs = diff --staged
+	
+	# Logging
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	ll = log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --stat
+	
+	# Useful commands
+	undo = reset HEAD~1 --mixed
+	amend = commit --amend --no-edit
+	wip = !git add -A && git commit -m "WIP"
+	unwip = !git log -1 --pretty=%B | grep -q "^WIP$" && git reset HEAD~1
+	
+	# Maintenance
+	cleanup = !git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d
+
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+
+[credential]
+	helper = osxkeychain

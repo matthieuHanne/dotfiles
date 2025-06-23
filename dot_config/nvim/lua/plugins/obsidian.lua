@@ -26,6 +26,7 @@ return {
 		},
 		templates = {
 			folder = "50_templates",
+			date_format = "%Y-%m-%d",
 		},
 		daily_notes = {
 			folder = "00__notes",
@@ -48,7 +49,7 @@ return {
 				opts = { buffer = true },
 			},
 			-- Smart action depending on context, either follow link or toggle checkbox.
-			["<leader><cr>"] = {
+			["<leader>cx"] = {
 				action = function()
 					return require("obsidian").util.smart_action()
 				end,
