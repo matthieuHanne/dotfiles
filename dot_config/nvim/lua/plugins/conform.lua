@@ -33,14 +33,33 @@ return {
         lua = { "stylua" },
         go = { "goimports", "gofmt" },
       },
+      format_on_save = false,
+      format_after_save = false,
     })
 
-    -- Run conform format on save automatically
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      pattern = "*",
-      callback = function()
-        require("conform").format({ async = false })
-      end,
-    })
+    -- Manual format commands with more control
+    vim.api.nvim_create_user_command("Format", function(args)
+      local range = nil
+      if args.count ~= -1 then
+        local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+        range = {
+          start = { args.line1, 0 },
+          ["end"] = { args.line2, end_line:len() },
+        }
+      end
+      require("conform").format({ async = true, lsp_fallback = true, range = range })
+    end, { range = true })
+
+    vim.api.nvim_create_user_command("FormatWrite", function()
+      require("conform").format({ async = false, lsp_fallback = true })
+      vim.cmd("write")
+    end, {})
+
+    -- Keymaps for formatting
+    vim.keymap.set({ "n", "v" }, "<leader>fm", function()
+      require("conform").format({ async = true, lsp_fallback = true })
+    end, { desc = "Format buffer" })
+
+
   end,
 }
