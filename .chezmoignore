@@ -1,1 +1,2 @@
 .config/chezmoi/chezmoistate.boltdb
+.config/zsh/secrets.zsh
