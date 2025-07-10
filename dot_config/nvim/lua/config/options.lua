@@ -3,7 +3,7 @@ opt.swapfile = false
 
 -- Basic editing
 opt.smartindent = true
-opt.autowrite = true -- Save before commands like :next
+opt.autowrite = false
 
 -- Default indent
 opt.expandtab = true -- use spaces, not tabs
@@ -27,6 +27,7 @@ opt.smartcase = true
 -- Clipboard & mouse
 opt.clipboard = "unnamedplus" -- System clipboard
 opt.mouse = "a" -- Enable mouse support
+opt.mousescroll = "ver:3,hor:0" -- Disable horizontal mouse scrolling
 
 -- Split behavior
 opt.splitbelow = true
@@ -60,23 +61,3 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 	command = "checktime",
 })
 
--- Auto-save all buffers when Neovim loses focus
-vim.api.nvim_create_autocmd("FocusLost", {
-	callback = function()
-		-- Save only modifiable, listed buffers that have changes
-		for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-			local ok, result = pcall(function()
-				return vim.api.nvim_buf_is_loaded(buf)
-					and vim.bo[buf].modifiable
-					and vim.bo[buf].buftype == ""
-					and vim.bo[buf].buflisted
-					and vim.bo[buf].modified
-			end)
-			if ok and result then
-				vim.api.nvim_buf_call(buf, function()
-					vim.cmd("silent! write")
-				end)
-			end
-		end
-	end,
-})
