@@ -35,7 +35,6 @@ export ZSH_CUSTOM="$ZSH/custom"
 export NPM_CONFIG_PREFIX="$XDG_DATA_HOME/npm"
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/config"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
-export NPM_CONFIG_TMP="$XDG_DATA_HOME/npm"
 export PATH="$XDG_DATA_HOME/npm/bin:$PATH"
 
 #PNPM
@@ -56,6 +55,11 @@ export TMUX_RESURRECT_DIR="$XDG_CACHE_HOME/tmux/resurrect"
 export DOCKER_CONFIG="$XDG_CONFIG_HOME/docker"
 export DOCKER_DATA="$XDG_DATA_HOME/docker"
 export DOCKER_CACHE="$XDG_CACHE_HOME/docker"
+
+# Homebrew
+export HOMEBREW_NO_ENV_HINTS=1              # Disable environment hints
+export HOMEBREW_NO_ANALYTICS=1              # Disable analytics for privacy
+export HOMEBREW_CLEANUP_MAX_AGE_DAYS=30     # Clean up old downloads after 30 days
 
 # Create required cache directories (only if they don't exist)
 for dir in \

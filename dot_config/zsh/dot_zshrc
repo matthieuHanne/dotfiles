@@ -1,9 +1,10 @@
 export ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
 
 # Load config parts
-# Order is important: env -> config -> oh-my-zsh -> plugins -> aliases
+# Order is important: env -> config -> oh-my-zsh -> plugins -> aliases -> secrets
 # Note: prompt.zsh is skipped since we're using Oh My Zsh's ys theme
-for file in env config oh-my-zsh plugins aliases; do
+# Note: secrets.zsh is loaded last and not version controlled
+for file in env config oh-my-zsh plugins aliases secrets; do
   [ -f "$ZDOTDIR/$file.zsh" ] && source "$ZDOTDIR/$file.zsh"
 done
 
