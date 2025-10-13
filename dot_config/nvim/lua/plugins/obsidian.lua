@@ -14,22 +14,22 @@ return {
 		},
 	},
 	opts = {
-		dir = vim.fn.expand("~/notes"),
+		dir = vim.fn.expand("~/repos/notes"),
 		workspaces = {
 			{
 				name = "notes",
-				path = "~/notes",
+				path = "~/repos/notes",
 			},
 		},
 		completion = {
 			nvim_cmp = true,
 		},
 		templates = {
-			folder = "50_templates",
+			folder = "40_templates",
 			date_format = "%Y-%m-%d",
 		},
 		daily_notes = {
-			folder = "00__notes",
+			folder = "00_daily",
 			date_format = "%Y-%m-%d",
 			template = "daily.md",
 		},

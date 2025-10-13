@@ -84,7 +84,13 @@ step "Setting up Homebrew"
 if ! command_exists brew; then
   echo "🌀 Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  
+  # Set up Homebrew in current shell (works for both Intel and Apple Silicon)
+  if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
 else
   echo "🔄 Updating Homebrew..."
   brew update
@@ -138,6 +144,16 @@ brew "cowsay"
 brew "fortune"
 brew "tldr"
 brew "thefuck"
+brew "direnv"        # Project-specific environment variables
+brew "atuin"         # Enhanced shell history with sync
+brew "mkcert"        # Local HTTPS development certificates
+brew "watchman"      # File watching service for development
+# brew "starship"    # Modern shell prompt (uncomment if you want to use with Oh My Zsh)
+
+# Container tools (optional Docker Desktop alternative)
+# brew "colima"      # Lightweight container runtime
+# brew "docker"      # Docker CLI (works with colima)
+# brew "docker-compose" # Docker Compose CLI
 
 # Fonts
 cask "font-fira-code-nerd-font"
@@ -191,7 +207,10 @@ install_zsh_plugin() {
     success "$name installed"
   else
     echo "🔄 Updating $name..."
-    cd "$target" && git pull origin master 2>/dev/null || git pull origin main 2>/dev/null || true
+    cd "$target" && {
+      git fetch origin
+      git reset --hard origin/master 2>/dev/null || git reset --hard origin/main 2>/dev/null || true
+    }
     success "$name updated"
   fi
 }
@@ -216,7 +235,10 @@ if [[ ! -d "$TPM_PATH" ]]; then
   success "TPM installed"
 else
   echo "🔄 Updating TPM..."
-  cd "$TPM_PATH" && git pull origin master
+  cd "$TPM_PATH" && {
+    git fetch origin
+    git reset --hard origin/master
+  }
   success "TPM updated"
 fi
 
@@ -248,18 +270,27 @@ step "Setting up Python environment"
 
 if command_exists python3; then
   echo "🌀 Installing essential Python packages..."
-  python3 -m pip install --user --upgrade \
-    pip \
-    setuptools \
-    wheel \
-    virtualenv \
-    pipx \
-    black \
-    flake8 \
-    mypy \
-    jupyter \
-    requests \
-    httpx
+  # Install pip and core tools
+  python3 -m pip install --user --upgrade pip setuptools wheel virtualenv
+  
+  # Install pipx for isolated tool installations
+  python3 -m pip install --user --upgrade pipx
+  python3 -m pipx ensurepath
+  
+  # Install development tools via pipx
+  if command_exists pipx; then
+    echo "🌀 Installing Python tools via pipx..."
+    pipx install black
+    pipx install flake8
+    pipx install mypy
+    pipx install jupyter
+    pipx install ruff
+    pipx install poetry
+  fi
+  
+  # Install libraries via pip
+  python3 -m pip install --user --upgrade requests httpx
+  
   success "Python packages installed"
 fi
 
@@ -341,6 +372,12 @@ echo "  1. Restart your terminal to load new configurations"
 echo "  2. Run 'tmux' and press Ctrl+Space + I to install tmux plugins"
 echo "  3. Open Neovim and let Lazy.nvim install plugins automatically"
 echo "  4. Customize any remaining settings to your preference"
+echo
+echo "💡 Optional: Using Starship with Oh My Zsh"
+echo "  If you want to use Starship prompt with Oh My Zsh:"
+echo "  1. Uncomment 'brew \"starship\"' in this script and re-run"
+echo "  2. Set ZSH_THEME=\"\" in your zsh config"
+echo "  3. Add 'eval \"\$(starship init zsh)\"' at the end of .zshrc"
 echo
 echo "🔗 Useful Commands:"
 echo "  • chezmoi status      - Check dotfiles status"

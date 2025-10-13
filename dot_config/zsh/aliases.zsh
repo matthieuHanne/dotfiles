@@ -47,7 +47,7 @@ git_main_branch() {
 
 # Custom git aliases (in addition to Oh My Zsh git plugin)
 alias \
-  gcm='git commit -m' \
+  gcm="git checkout main" \
   gco='git checkout' \
   gst='git status' \
   gpull='git pull' \
@@ -103,6 +103,9 @@ alias \
   chown='chown --preserve-root' \
   chmod='chmod --preserve-root' \
   chgrp='chgrp --preserve-root'
+
+# Codex alias
+alias fox='codex --sandbox danger-full-access -m gpt-5 -c model_reasoning_effort="high"'
 
 # macOS specific
 if [[ "$OSTYPE" == "darwin"* ]]; then

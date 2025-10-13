@@ -1,16 +1,23 @@
 # Theme and Appearance
-theme = catppuccin-mocha
-font-family = "FiraCode Retina Nerd Font Mono"
+theme = light:"Catppuccin Latte",dark:"Catppuccin Mocha"
+font-family = "Ubuntu Mono"
 font-size = 14
 font-thicken = true
+font-thicken-strength = 70
 window-padding-x = 10
 window-padding-y = 10
+window-padding-balance = true
+adjust-cell-height = 15%
 
 # Behavior
+clipboard-trim-trailing-spaces = true
 copy-on-select = clipboard
 shell-integration = zsh
-mouse-scroll-multiplier = 3
+mouse-scroll-multiplier = 1
 confirm-close-surface = false
+
+# URL clicking
+link-url = true
 
 # Cursor
 cursor-style = block
@@ -20,20 +27,21 @@ cursor-style-blink = true
 scrollback-limit = 10000
 
 # Window
+window-colorspace = display-p3
 window-decoration = true
-window-theme = dark
+window-theme = system
 macos-titlebar-style = transparent
 
 # Custom Keybindings
 # Window Management
-keybind = super+w=text:\x1b[21~        # Close tab
-keybind = super+t=text:\x1b[20~        # New tab
-keybind = super+d=text:\x1b[19~        # Split vertical
-keybind = super+shift+d=text:\x1b[18~  # Split horizontal
+#keybind = super+w=text:\x1b[21~        # Close tab
+#keybind = super+t=text:\x1b[20~        # New tab
+#keybind = super+d=text:\x1b[19~        # Split vertical
+#keybind = super+shift+d=text:\x1b[18~  # Split horizontal
 
 # Navigation
-keybind = super+right=text:\x1b[15~    # Next tab
-keybind = super+left=text:\x1b[17~     # Previous tab
+#keybind = super+right=text:\x1b[15~    # Next tab
+#keybind = super+left=text:\x1b[17~     # Previous tab
 
 # Function Keys (F1-F12) with Ctrl
 # These map to tmux window switching in your config

@@ -4,13 +4,28 @@
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 if [ -d "$HOME/.local/bin" ]; then
-  LOCAL_PATHS=$(find "$HOME/.local/bin" -type d 2>/dev/null | paste -sd ':' -)
-  export PATH="$PATH:$LOCAL_PATHS"
+  export PATH="$HOME/.local/bin:$PATH"
 fi
 
 export EDITOR="nvim"
 export TERMINAL="ghostty"
 export BROWSER="google-chrome"
+
+# Theme synchronization with macOS appearance
+_theme_env="$XDG_CONFIG_HOME/zsh/theme.env"
+_theme_sync_script="$XDG_CONFIG_HOME/scripts/theme-sync.zsh"
+
+if [ -z "${APP_THEME:-}" ] && [ -x "$_theme_sync_script" ] && [ ! -f "$_theme_env" ]; then
+  "$_theme_sync_script" >/dev/null 2>&1 || true
+fi
+
+if [ -f "$_theme_env" ]; then
+  source "$_theme_env"
+fi
+
+export APP_THEME="${APP_THEME:-dark}"
+export CATPPUCCIN_FLAVOUR="${CATPPUCCIN_FLAVOUR:-mocha}"
+export NVIM_BACKGROUND="${NVIM_BACKGROUND:-dark}"
 
 # ----------------------------------------
 # 📦 XDG Base Directory Setup

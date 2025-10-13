@@ -1,4 +1,7 @@
 local opt = vim.opt
+if vim.env.NVIM_BACKGROUND ~= nil and vim.env.NVIM_BACKGROUND ~= '' then
+	vim.o.background = vim.env.NVIM_BACKGROUND
+end
 opt.swapfile = false
 
 -- Basic editing
@@ -34,7 +37,7 @@ opt.splitbelow = true
 opt.splitright = true
 
 -- Performance
-opt.updatetime = 200
+opt.updatetime = 250
 opt.timeoutlen = 300
 
 -- Folding (basic)
