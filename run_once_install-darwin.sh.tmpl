@@ -108,20 +108,13 @@ tap "homebrew/cask-fonts"
 
 # Essential CLI tools
 brew "curl"
-brew "wget"
 brew "git"
-brew "git-delta"
 brew "ripgrep"
 brew "fd"
-brew "fzf"
-brew "jq"
-brew "yq"
 brew "tree"
 brew "htop"
-brew "btop"
-brew "bat"
-brew "eza"
-brew "zoxide"
+brew "telnet"
+brew "the_silver_searcher"  # ag - code search tool
 
 # Development tools
 brew "neovim"
@@ -132,38 +125,53 @@ brew "gh"
 
 # Programming languages and runtimes
 brew "node"
+brew "node@22"
 brew "pnpm"
 brew "go"
-brew "python@3.11"
-brew "python@3.12"
 
-# Additional utilities
-brew "figlet"
-brew "lolcat"
-brew "cowsay"
-brew "fortune"
-brew "tldr"
-brew "thefuck"
-brew "direnv"        # Project-specific environment variables
-brew "atuin"         # Enhanced shell history with sync
-brew "mkcert"        # Local HTTPS development certificates
-brew "watchman"      # File watching service for development
-# brew "starship"    # Modern shell prompt (uncomment if you want to use with Oh My Zsh)
+# Cloud & DevOps
+brew "awscli"       # Official AWS CLI
+brew "sqlc"         # Generate type-safe Go from SQL
 
-# Container tools (optional Docker Desktop alternative)
-# brew "colima"      # Lightweight container runtime
-# brew "docker"      # Docker CLI (works with colima)
-# brew "docker-compose" # Docker Compose CLI
+# AI & Automation tools
+brew "codex"        # OpenAI's coding agent
+brew "fabric-ai"    # Framework for augmenting humans using AI
+
+# Fun utilities
+brew "figlet"       # ASCII art banner generator
 
 # Fonts
 cask "font-fira-code-nerd-font"
+cask "font-ubuntu-mono"
 
 # GUI applications
 cask "ghostty"
-cask "docker"
-cask "visual-studio-code"
 cask "google-chrome"
-cask "firefox"
+cask "orbstack"     # Lightweight Docker Desktop alternative
+cask "telegram"
+
+# Optional tools (uncomment if needed)
+# brew "wget"
+# brew "git-delta"   # Syntax-highlighting pager for git
+# brew "fzf"         # Fuzzy finder
+# brew "jq"          # JSON processor
+# brew "yq"          # YAML processor
+# brew "btop"        # Resource monitor
+# brew "bat"         # Cat clone with syntax highlighting
+# brew "eza"         # Modern ls replacement
+# brew "zoxide"      # Smarter cd command
+# brew "lolcat"      # Rainbow text
+# brew "cowsay"      # Talking cow
+# brew "fortune"     # Random quotes
+# brew "tldr"        # Simplified man pages
+# brew "thefuck"     # Correct previous command
+# brew "direnv"      # Project-specific environment variables
+# brew "atuin"       # Enhanced shell history with sync
+# brew "mkcert"      # Local HTTPS certificates
+# brew "watchman"    # File watching service
+# brew "starship"    # Modern shell prompt
+# cask "firefox"
+# cask "visual-studio-code"
 EOF
 
 if [[ $? -eq 0 ]]; then
@@ -247,51 +255,53 @@ fi
 # ----------------------------------------
 step "Setting up Node.js environment"
 
-# Install global packages with pnpm
+# Install global packages with pnpm (optional - uncomment packages you need)
 if command_exists pnpm; then
-  echo "🌀 Installing global Node.js packages..."
-  pnpm add -g \
-    typescript \
-    ts-node \
-    eslint \
-    prettier \
-    npm-check-updates \
-    serve \
-    http-server \
-    nodemon \
-    concurrently
-  success "Global Node.js packages installed"
+  echo "🌀 Installing essential global Node.js packages..."
+  # Uncomment packages you want globally:
+  # pnpm add -g \
+  #   typescript \
+  #   ts-node \
+  #   eslint \
+  #   prettier \
+  #   npm-check-updates \
+  #   serve \
+  #   http-server \
+  #   nodemon \
+  #   concurrently
+  success "Node.js environment ready"
+else
+  warning "pnpm not found, skipping Node.js global packages"
 fi
 
 # ----------------------------------------
-# 🐍 Python Setup
+# 🐍 Python Setup (Optional)
 # ----------------------------------------
 step "Setting up Python environment"
 
 if command_exists python3; then
-  echo "🌀 Installing essential Python packages..."
-  # Install pip and core tools
-  python3 -m pip install --user --upgrade pip setuptools wheel virtualenv
-  
-  # Install pipx for isolated tool installations
-  python3 -m pip install --user --upgrade pipx
-  python3 -m pipx ensurepath
-  
-  # Install development tools via pipx
-  if command_exists pipx; then
-    echo "🌀 Installing Python tools via pipx..."
-    pipx install black
-    pipx install flake8
-    pipx install mypy
-    pipx install jupyter
-    pipx install ruff
-    pipx install poetry
-  fi
-  
-  # Install libraries via pip
-  python3 -m pip install --user --upgrade requests httpx
-  
-  success "Python packages installed"
+  echo "Python $(python3 --version) is available"
+
+  # Optional: Install pipx for isolated Python tool installations
+  # Uncomment if you want Python development tools globally:
+  # echo "🌀 Installing pipx..."
+  # python3 -m pip install --user --upgrade pip setuptools wheel
+  # python3 -m pip install --user --upgrade pipx
+  # python3 -m pipx ensurepath
+  #
+  # if command_exists pipx; then
+  #   echo "🌀 Installing Python tools via pipx..."
+  #   pipx install black      # Code formatter
+  #   pipx install flake8     # Linter
+  #   pipx install mypy       # Type checker
+  #   pipx install ruff       # Fast linter
+  #   pipx install poetry     # Dependency management
+  #   pipx install jupyter    # Interactive notebooks
+  # fi
+
+  success "Python environment ready"
+else
+  warning "Python not found"
 fi
 
 # ----------------------------------------
@@ -362,8 +372,8 @@ echo "  • Homebrew packages installed and updated"
 echo "  • Oh My Zsh installed with XDG compliance"
 echo "  • Zsh plugins (autosuggestions, syntax-highlighting) installed"
 echo "  • Tmux Plugin Manager installed"
-echo "  • Node.js global packages installed"
-echo "  • Python packages installed"
+echo "  • Node.js and pnpm ready (global packages optional)"
+echo "  • Python environment ready (tools optional)"
 echo "  • macOS preferences optimized"
 echo "  • Personal workspace set up"
 echo
@@ -372,12 +382,6 @@ echo "  1. Restart your terminal to load new configurations"
 echo "  2. Run 'tmux' and press Ctrl+Space + I to install tmux plugins"
 echo "  3. Open Neovim and let Lazy.nvim install plugins automatically"
 echo "  4. Customize any remaining settings to your preference"
-echo
-echo "💡 Optional: Using Starship with Oh My Zsh"
-echo "  If you want to use Starship prompt with Oh My Zsh:"
-echo "  1. Uncomment 'brew \"starship\"' in this script and re-run"
-echo "  2. Set ZSH_THEME=\"\" in your zsh config"
-echo "  3. Add 'eval \"\$(starship init zsh)\"' at the end of .zshrc"
 echo
 echo "🔗 Useful Commands:"
 echo "  • chezmoi status      - Check dotfiles status"
