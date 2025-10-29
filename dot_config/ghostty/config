@@ -1,5 +1,5 @@
 # Theme and Appearance
-theme = light:Catppuccin Latte,dark:Catppuccin Macchiato
+theme = light:Catppuccin Latte,dark:Catppuccin Mocha
 font-family = "Ubuntu Mono"
 font-size = 14
 font-thicken = true

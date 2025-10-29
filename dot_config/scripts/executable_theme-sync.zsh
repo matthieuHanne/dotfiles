@@ -8,7 +8,7 @@ flavour="latte"
 
 if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -qi "Dark"; then
   mode="dark"
-  flavour="macchiato"
+  flavour="mocha"
 fi
 
 env_file="$HOME/.config/zsh/theme.env"
