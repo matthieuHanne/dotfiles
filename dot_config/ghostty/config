@@ -1,5 +1,5 @@
 # Theme and Appearance
-theme = light:"Catppuccin Latte",dark:"Catppuccin Mocha"
+theme = light:Catppuccin Latte,dark:Catppuccin Macchiato
 font-family = "Ubuntu Mono"
 font-size = 14
 font-thicken = true
@@ -8,7 +8,7 @@ window-padding-x = 10
 window-padding-y = 10
 window-padding-balance = true
 adjust-cell-height = 15%
-
+minimum-contrast = 6 
 # Behavior
 clipboard-trim-trailing-spaces = true
 copy-on-select = clipboard
