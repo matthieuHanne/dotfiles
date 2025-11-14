@@ -1,0 +1,92 @@
+{{- if eq .chezmoi.os "linux" }}
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ----------------------------------------
+# 💻 Debian Workstation Setup (with i3)
+# ----------------------------------------
+
+# ─── Always run the CORE bootstrap first ───────────────────────
+chezmoi run-once run_once_install-debian-core.sh.tmpl
+
+# ----- XDG -----
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+# ---------- Logging ----------
+step() { local c='\033[1;34m'; local r='\033[0m'; echo; echo -e "${c}🔹 $1${r}"; }
+success() { echo -e "\033[1;32m✅ $1\033[0m"; }
+
+command_exists() { command -v "$1" >/dev/null 2>&1; }
+
+# ---------- GUI Packages ----------
+step "Installing i3wm and GUI tools"
+sudo apt install -y \
+  i3 rofi feh picom lxappearance \
+  fonts-firacode fonts-ubuntu \
+  alacritty
+
+success "Window manager and GUI utilities installed"
+
+# ---------- Flatpak ----------
+step "Installing Flatpak + Flathub"
+sudo apt install -y flatpak
+sudo flatpak remote-add --if-not-exists flathub \
+  https://flathub.org/repo/flathub.flatpakrepo
+success "Flatpak ready"
+
+# ---------- GUI Applications via Flatpak ----------
+step "Installing GUI apps via Flatpak"
+
+# Cursor
+flatpak install -y flathub com.cursor.editor
+
+# Chromium
+flatpak install -y flathub org.chromium.Chromium
+
+success "Flatpak apps installed"
+
+# ---------- Oh My Zsh ----------
+step "Installing Oh My Zsh"
+OMZ_DIR="$XDG_DATA_HOME/oh-my-zsh"
+if [[ ! -d "$OMZ_DIR" ]]; then
+  git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$OMZ_DIR"
+else
+  (cd "$OMZ_DIR" && git pull --ff-only)
+fi
+success "Oh My Zsh installed"
+
+# ---------- Zsh Plugins ----------
+step "Installing Zsh plugins"
+ZSH_PLUGIN_DIR="$XDG_DATA_HOME/zsh/plugins"
+mkdir -p "$ZSH_PLUGIN_DIR"
+
+clone_plugin() {
+  local name=$1 repo=$2
+  if [[ ! -d "$ZSH_PLUGIN_DIR/$name" ]]; then
+    git clone --depth=1 "$repo" "$ZSH_PLUGIN_DIR/$name"
+  else
+    (cd "$ZSH_PLUGIN_DIR/$name" && git pull --ff-only)
+  fi
+}
+
+clone_plugin zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions
+clone_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting
+
+success "Zsh plugins ready"
+
+# ---------- Node / Go / Python ----------
+step "Installing development languages"
+sudo apt install -y nodejs npm golang python3 python3-pip
+success "Language runtimes installed"
+
+# ---------- Optional: Clone Notes Repo ----------
+step "Cloning personal notes (optional)"
+if [[ ! -d "$HOME/notes" ]]; then
+  git clone https://github.com/matthieuHanne/notes.git "$HOME/notes" || true
+fi
+success "Workspace-ready"
+
+success "Debian developer workstation setup complete!"
+{{- end }}
