@@ -1,0 +1,81 @@
+{{- if eq .chezmoi.os "linux" }}
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ----------------------------------------
+# 🌱 Debian Core Bootstrap (Universal)
+# ----------------------------------------
+
+# ----- XDG Base Directories -----
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+# ---------- Logging ----------
+step() {
+  local color='\033[1;34m'; local reset='\033[0m'
+  echo; echo -e "${color}🔹 $1${reset}"
+  printf '%*s\n' "${COLUMNS:-80}" '' | tr ' ' '-'
+}
+success() { echo -e "\033[1;32m✅ $1\033[0m"; }
+warning() { echo -e "\033[1;33m⚠️  $1\033[0m"; }
+error() { echo -e "\033[1;31m❌ $1\033[0m"; }
+
+command_exists() { command -v "$1" >/dev/null 2>&1; }
+
+# ---------- XDG Directories ----------
+step "Creating XDG directories"
+mkdir -p \
+  "$XDG_CONFIG_HOME" \
+  "$XDG_DATA_HOME" \
+  "$XDG_CACHE_HOME" \
+  "$XDG_DATA_HOME/tmux/plugins" \
+  "$XDG_CACHE_HOME/tmux"
+success "XDG directories ready"
+
+# ---------- APT Update ----------
+step "Updating APT package lists"
+sudo apt update -y
+success "APT updated"
+
+# ---------- Base System Packages ----------
+step "Installing base CLI tools"
+sudo apt install -y \
+  git zsh tmux curl neovim \
+  ripgrep fd-find tree htop \
+  build-essential ca-certificates software-properties-common
+success "Base CLI tools installed"
+
+# ---------- ChezMoi ----------
+if ! command_exists chezmoi; then
+  step "Installing chezmoi"
+  sudo apt install -y chezmoi
+  success "chezmoi installed"
+else
+  success "chezmoi already installed"
+fi
+
+# ---------- Docker CE ----------
+step "Installing Docker CE"
+if ! command_exists docker; then
+  sudo install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/debian/gpg |
+    sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+    https://download.docker.com/linux/debian \
+    $(. /etc/os-release; echo $VERSION_CODENAME) stable" |
+    sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+  sudo apt update -y
+  sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+  sudo usermod -aG docker "$USER"
+  success "Docker installed; logout/login needed for group changes"
+else
+  success "Docker already installed"
+fi
+
+success "Debian core bootstrap complete!"
+{{- end }}
